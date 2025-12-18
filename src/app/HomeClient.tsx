@@ -125,7 +125,15 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
                 {/* Content */}
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-center text-sm text-gray-500 mb-3">
-                    <span>{format(new Date(post.date), "MMM dd, yyyy")}</span>
+                    <span>
+                      {(() => {
+                        const date = new Date(post.date);
+                        return !isNaN(date.getTime())
+                          ? format(date, "MMM dd, yyyy")
+                          : "—";
+                      })()}
+                    </span>
+
                     <span className="mx-2">•</span>
                     <span className="flex items-center gap-1">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
