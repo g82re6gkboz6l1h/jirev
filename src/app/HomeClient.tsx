@@ -104,77 +104,42 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
             {filteredPosts.slice(0, 3).map((post) => (
               <article
                 key={`${post.slug}-${post.date}`}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden
+             max-w-sm mx-auto"
               >
                 {/* Image */}
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-54">
                   <Image
                     src={post.image}
                     alt={post.title}
                     fill
                     unoptimized
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="object-cover"
                   />
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                      {post.category}
-                    </span>
-                  </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex items-center text-sm text-gray-500 mb-3">
-                    <span>
-                      {(() => {
-                        const date = new Date(post.date);
-                        return !isNaN(date.getTime())
-                          ? format(date, "MMM dd, yyyy")
-                          : "—";
-                      })()}
-                    </span>
-
-                    <span className="mx-2">•</span>
-                    <span className="flex items-center gap-1">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      {post.author}
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl font-bold mb-3 group-hover:text-blue-600 transition-colors">
+                <div className="p-6">
+                  <h2 className="text-3xl leading-snug font-bold text-gray-900 mb-3">
                     <Link
                       href={`/blog/${post.slug}`}
                       className="hover:text-blue-600"
                     >
                       {post.title}
                     </Link>
-                  </h3>
+                  </h2>
 
-                  <p className="text-gray-600 mb-6 flex-grow line-clamp-2">
+                  <p className="text-gray-600 text-sm mb-5 line-clamp-2">
                     {post.excerpt}
                   </p>
 
-                  <div className="mt-auto">
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-200 group/button"
-                    >
-                      Read Article
-                      <svg
-                        className="h-4 w-4 group-hover/button:translate-x-1 transition-transform"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </Link>
-                  </div>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="inline-flex items-center text-blue-600 font-medium hover:text-blue-800"
+                  >
+                    Read Article
+                    <ChevronRight className="ml-1 h-4 w-4" />
+                  </Link>
                 </div>
               </article>
             ))}
