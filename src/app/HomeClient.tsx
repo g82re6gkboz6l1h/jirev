@@ -30,6 +30,19 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
     );
   });
 
+  const sortedPosts = [...filteredPosts].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  const POSTS_PER_PAGE = 6;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const paginatedPosts = sortedPosts.slice(
+    startIndex,
+    startIndex + POSTS_PER_PAGE
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* ================= HEADER ================= */}
@@ -96,16 +109,13 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
 
         {/* ================= POSTS ================= */}
         <section className="mb-16">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold">Articles</h2>
-          </div>
+          <div className="mb-8"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {filteredPosts.slice(0, 3).map((post) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-6xl mx-auto">
+            {paginatedPosts.map((post) => (
               <article
                 key={`${post.slug}-${post.date}`}
-                className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden
-             max-w-sm mx-auto"
+                className="post-card bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden w-full h-full"
               >
                 {/* Image */}
                 <div className="relative h-54">
@@ -123,7 +133,7 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
                   <h2 className="text-3xl leading-snug font-bold text-gray-900 mb-3">
                     <Link
                       href={`/blog/${post.slug}`}
-                      className="hover:text-blue-600"
+                      className="post-title-link"
                     >
                       {post.title}
                     </Link>
@@ -144,17 +154,68 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
               </article>
             ))}
           </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center space-x-2 mt-12">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        currentPage === pageNum
+                          ? "bg-blue-600 text-white"
+                          : "border border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </section>
 
         {/* ================= LATEST POSTS ================= */}
-        <section>
+        <section className="max-w-4xl">
           <h2 className="text-3xl font-bold mb-8">Latest Articles</h2>
 
           <div className="space-y-4">
-            {filteredPosts.map((post) => (
+            {sortedPosts.slice(0, 3).map((post) => (
               <article
                 key={`${post.slug}-${post.date}`}
-                className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition"
+                className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition max-w-4xl"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   {/* Text */}

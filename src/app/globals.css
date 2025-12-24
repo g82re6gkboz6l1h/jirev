@@ -103,3 +103,24 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Home page post title hover effect */
+.post-title-link {
+  color: #111827; /* gray-900 */
+  transition: color 0.2s ease-in-out;
+}
+
+.post-title-link:hover {
+  color: #3b82f6 !important; /* blue-500 */
+}
+
+/* Card hover animation */
+.post-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.post-card:hover {
+  transform: translateY(-8px) scale(1.015) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+}
