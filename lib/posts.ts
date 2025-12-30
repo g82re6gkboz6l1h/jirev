@@ -1,4 +1,4 @@
-﻿import { remark } from "remark";
+import { remark } from "remark";
 import html from "remark-html";
 import fs from "fs";
 import path from "path";
@@ -15,6 +15,7 @@ export interface Post {
   category: string;
   image: string;
   content: string;
+  tags?: string[];
 }
 
 // Normalize date safely for production
@@ -33,7 +34,14 @@ function normalizeDate(value: unknown): string {
   return "";
 }
 
+// Production-safe getAllPosts
 export function getAllPosts(): Post[] {
+  // Return empty array if folder does not exist
+  if (!fs.existsSync(postsDirectory)) {
+    console.warn("Posts folder not found:", postsDirectory);
+    return [];
+  }
+
   const fileNames = fs.readdirSync(postsDirectory);
 
   const allPosts = fileNames
@@ -41,6 +49,10 @@ export function getAllPosts(): Post[] {
     .map((fileName) => {
       const slug = fileName.replace(/\.md$/, "");
       const fullPath = path.join(postsDirectory, fileName);
+
+      // Check if file exists and is readable
+      if (!fs.existsSync(fullPath)) return null;
+
       const fileContents = fs.readFileSync(fullPath, "utf8");
       const { data, content } = matter(fileContents);
 
@@ -53,18 +65,20 @@ export function getAllPosts(): Post[] {
         category: data.category ?? "",
         image: data.image ?? "",
         content,
-      };
+      } as Post;
     })
-    .filter((post) => post.slug && post.title);
+    .filter((post): post is Post => post !== null && post.slug && post.title);
 
   return allPosts.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
+// Production-safe getPostBySlug
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
     const fullPath = path.join(postsDirectory, `${slug}.md`);
 
     if (!fs.existsSync(fullPath)) {
+      console.warn(`Post not found: ${slug}`);
       return null;
     }
 
